@@ -1,0 +1,23 @@
+body {
+    background: url(../img/0021.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+}
+
+.myimg-span {
+
+    width: 180px;
+
+    height: 20px;
+
+    overflow: hidden;
+
+    display: block;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+}

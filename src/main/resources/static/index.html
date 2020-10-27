@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<script src="./js/vue.js" type="text/javascript" charset="utf-8"></script>
+	<!-- 引入样式 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<!-- 引入组件库 -->
+	<script src="./js/element-ui.js"></script>
+	<link href="./css/index.css" rel="stylesheet" />
+	<script src="./js/axios.min.js"></script>
+</head>
+<body>
+<div id="vueapp">
+	<el-container>
+		<el-header>
+			<el-row>
+				<el-col :span="8" :offset="3">
+					<div>
+						<h1>1313</h1>
+					</div>
+				</el-col>
+				<el-col :span="6" :offset="2">
+					<el-row style="margin-top: 15px;">
+						<el-col :span="7">
+							<div>
+								<template>
+									<el-select v-model="value" placeholder="请选择">
+										<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</template>
+							</div>
+						</el-col>
+						<el-col :span="14">
+							<el-input v-model="input" placeholder="请输入内容"></el-input>
+						</el-col>
+						<el-col :span="3">
+							<el-button type="primary" plain @click="mainimages()">搜索
+							</el-button>
+						</el-col>
+					</el-row>
+				</el-col>
+			</el-row>
+		</el-header>
+		<el-main>
+			<el-row align="center" style="margin-top: 15px;">
+				<el-col :span="18" :offset="3">
+					<el-row :gutter="20">
+						<div v-for="xin in images" >
+							<el-col :span="8" >
+								<div align="center">
+									<img :src="getImgUrl(xin.url)"/>
+									<p class="myimg-span">{{xin.uid}}<a :href="xin.url" target="_blank" style="text-decoration:none"> {{xin.name}}</a></p>
+								</div>
+							</el-col>
+						</div>
+					</el-row>
+				</el-col>
+			</el-row>
+			<div id="page_img" align="center" style="margin-top: 20px;">
+				<el-pagination
+						@current-change="handleCurrentChange"
+						:page-size="1" :pager-count="7" layout="prev, pager, next" :total="imgpage">
+				</el-pagination>
+			</div>
+		</el-main>
+		<el-footer>
+			<el-row :gutter="20" style="margin-top: 15px;">
+				<el-col :span="8" :offset="8">
+					<div id="footer_email" align="center">
+						jiel998@163.com
+					</div>
+				</el-col>
+			</el-row>
+		</el-footer>
+	</el-container>
+</div>
+<script>
+	var vm = new Vue({
+		el: "#vueapp",
+		data: {
+			input: '4k',
+			options: [{
+				value: 'name/',
+				label: '姓名'
+			}, {
+				value: 'lei/',
+				label: '类别'
+			}],
+			value: 'name/',
+			imgpage: 4184,
+			currentPage: 1,
+			images: [{"uid":1,"lei":"4K动漫图片","name":" > 蓝色海水 水下女孩 海龟 鱼 唯美意境4k动漫壁纸","url":"http://pic.netbian.com/uploads/allimg/191207/171141-1575709901e5e0.jpg"},{"uid":2,"lei":"4K游戏图片","name":" > 王者荣耀魅语不知火舞4k壁纸","url":"http://pic.netbian.com/uploads/allimg/200324/224326-158506100619b6.jpg"},{"uid":3,"lei":"4K美女图片","name":" > 虞书欣高清写真图片","url":"http://pic.netbian.com/uploads/allimg/200326/213017-1585229417b44e.jpg"},{"uid":4,"lei":"4K动漫图片","name":" > 女孩 闭眼 帽子 4k唯美动漫壁纸","url":"http://pic.netbian.com/uploads/allimg/200328/225221-15854071419fcf.jpg"},{"uid":5,"lei":"4K动漫图片","name":" > 海边 动漫美女 Fate 贞德4k壁纸","url":"http://pic.netbian.com/uploads/allimg/200328/231430-1585408470286e.jpg"},{"uid":6,"lei":"4K动漫图片","name":" > Megumin惠惠4k动漫壁纸3840x2160","url":"http://pic.netbian.com/uploads/allimg/200330/214141-15855757016b74.jpg"}],
+		},
+		methods: {
+			created:function(){
+				this.images = [];
+				this.imgpage = 1;
+				axios.get('http://127.0.0.1:8092/find/1')
+						.then(response => {
+							console.log("mounted成功");
+							this.images = response.data.listimg;
+							this.imgpage = response.data.pageImg.count;
+						})
+			},
+			mainimages(){
+				this.images = [];
+				this.imgpage = 1;
+				axios.get('http://127.0.0.1:8092/'+this.value+this.input+"/"+this.currentPage)
+						.then(response => {
+							console.log("main成功");
+							this.images = response.data.listimg;
+							this.imgpage = response.data.pageImg.count+1;
+							console.log(this.images);
+						})
+						.catch(error => {
+							console.log(error);
+							console.log("main错误");
+						});
+			},
+			findmainimages(){
+				this.images = [];
+				this.imgpage = 1;
+				axios.get('http://127.0.0.1:8092/find'+"/"+this.currentPage)
+						.then(response => {
+							console.log("find成功");
+							this.images = response.data.listimg;
+							this.imgpage = response.data.pageImg.count;
+						})
+						.catch(error => {
+							console.log(error);
+							console.log("find错误");
+						});
+			},
+			getImgUrl(url) {
+				return 'https://images.weserv.nl/?url=' + url + '&h=170';
+			},
+			handleCurrentChange(currentPage){
+				this.currentPage = currentPage;
+				console.log(this.currentPage)  //点击第几页
+				this.imgpage >1000?this.findmainimages():this.mainimages();
+			},
+		}
+	})
+</script>
+</body>
+</html>
